@@ -13,4 +13,10 @@ app.use(express.json());
 app.use('/',userRoutes)
 app.use('/admin',adminRoutes)
 
+app.use('/file',express.static('file'));
+
+app.listen(3000,()=>{
+    console.log('server is listening on localhost:3000');
+})
+
 
