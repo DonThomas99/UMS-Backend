@@ -9,9 +9,11 @@ const multer = require('multer')
 const upload = multer({dest:'./file'})
 
 router.post('/register',async(req,res)=>{
+    console.log(req.body);
     const {email,password,name} = req.body
-    const salt = await bcrypt.genSalt(10)
-    const hashedPassword = await bcrypt.hash(password,salt)
+    // const salt = await bcrypt.genSalt(10)
+    
+    const hashedPassword = await bcrypt.hash(password,10)
     const record = await User.findOne({email:email})
 
     if(record){
@@ -27,7 +29,7 @@ router.post('/register',async(req,res)=>{
         const result = await user.save();
         //jwt token
         const {_id} = await result.toJSON();
-        const token = jwt.sign({_id:id},"secret")
+        const token = jwt.sign({_id:_id},"secret")
         res.cookie("jwt",token,{
             httpOnly:true,
             maxAge:24*60*60*1000
