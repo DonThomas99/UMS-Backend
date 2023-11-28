@@ -8,6 +8,7 @@ const bcrypt = require('bcryptjs')
 
 adminRoute.post('/login',async(req,res)=>{
     try {
+        console.log("im in");
         const user = await User.findOne({email:req.body.email,is_admin:true})
         if(!user){
             return res.status(400).send({
@@ -141,5 +142,4 @@ try {
 
 })
 
-
-adminRoute.post('')
+module.exports = adminRoute
