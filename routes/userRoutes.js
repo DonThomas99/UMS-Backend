@@ -99,10 +99,31 @@ router.post('/profile-upload-single',upload.single('image'),async(req,res)=>{
         }
         const updateImg = await User.updateOne({_id:claims._id},{$set:{image:req.files.filename}});
         if(!updateImg){
-            return res.status(401).json(message:"Something went wrong")
+            return res.status(401).json({message:"Something went wrong"})
         }
-        return res.status(200).json()
+        return res.status(200).json({
+            message:"Image Uploaded successfully"
+        })
     } catch (error) {
-        
+        console.log(error.message)
     }
 })
+router.get('/profile',async(req,res)=>{
+    try {
+        const cookie = req.cookies["jwt"];
+        const claims = jwt.verify(cookie,"secret")
+        if(!claims){
+            return res.status(401).send({
+                message:"unauthenticated"
+            })
+        }
+
+        const user = await User.findOne({_id:claims._id})
+        const {password, ...data} = await user.toJSON()
+        res.send(data)
+    } catch (error) {
+        console.log(error.message);        
+    }
+})
+
+module.exports = router
