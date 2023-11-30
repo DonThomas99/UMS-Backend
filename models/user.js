@@ -14,11 +14,12 @@ const userSchema = new mongoose.Schema({
         required:true
     },
     is_admin:{
- type:Boolean,
- default:false
+        type:Boolean,
+        default:false
     },
     image:{
-        type:String
+        type:String,
+        default:""
     }
 })
 

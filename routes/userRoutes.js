@@ -9,7 +9,6 @@ const multer = require('multer')
 const upload = multer({dest:'./file'})
 
 router.post('/register',async(req,res)=>{
-    console.log(req.body);
     const {email,password,name} = req.body
     // const salt = await bcrypt.genSalt(10)
     
@@ -42,9 +41,10 @@ router.post('/register',async(req,res)=>{
 
 router.post('/login',async(req,res)=>{
    try {
-    const user = await User.findOne({
-        email:req.body.email
-    })
+       const user = await User.findOne({
+           email:req.body.email
+        })
+        console.log(user);
     if(!user){
         return res.status(404).send({
             message:"User not found"
@@ -56,7 +56,7 @@ router.post('/login',async(req,res)=>{
             message:"Password is Incorrect "
         })
     }
-        const token = jwt.sign({_id:user,_id},"secret");
+        const token = jwt.sign({_id:user},"secret");
         res.cookie("jwt",token,{
             httpOnly:true,
             maxAge:24*60*60*1000
@@ -81,7 +81,7 @@ router.get('/user',async(req,res)=>{
             })
         }
         const user = await User.findOne({_id:claims._id})
-        const{password, ...data} = await user.toJSON();
+        const{password, ...data} =  user.toJSON();
         res.send(data)
     }catch(error){
         return res.status(401).send({
@@ -99,7 +99,7 @@ router.post('/profile-upload-single',upload.single('image'),async(req,res)=>{
                 message:"unauthenticated"
             })
         }
-        const updateImg = await User.updateOne({_id:claims._id},{$set:{image:req.files.filename}});
+        const updateImg = await User.updateOne({_id:claims._id},{$set:{image:req.file.filename}});
         if(!updateImg){
             return res.status(401).json({message:"Something went wrong"})
         }
@@ -121,11 +121,20 @@ router.get('/profile',async(req,res)=>{
         }
 
         const user = await User.findOne({_id:claims._id})
-        const {password, ...data} = await user.toJSON()
+        console.log(user);
+        const {password, ...data} = user.toJSON()
+
         res.send(data)
     } catch (error) {
         console.log(error.message);        
     }
 })
+
+router.post('/logout',(req,res)=>{
+    res.cookie("jwt","",{maxAge:0})
+    res.send({
+      message:"success"
+    })
+  })
 
 module.exports = router

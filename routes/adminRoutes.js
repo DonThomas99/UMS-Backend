@@ -50,8 +50,9 @@ adminRoute.get('/active',async(req,res)=>{
                 message:"unauthenticated"
             })
         }
+        console.log("hghvjh");
 
-        const user = User.findOne({_id:claims._id,is_admin:"true"})
+        const user = await User.findOne({_id:claims._id,is_admin:true})
         const {password,...data} = user.toJSON();
         res.send(data)
     } catch (error) {
@@ -63,7 +64,7 @@ adminRoute.get('/active',async(req,res)=>{
 
 adminRoute.get('/users',async(req,res)=>{
     try{
-        const user = await User.find({})
+        const user = await User.find({is_admin:false})
         res.send(user)
     }catch (error) {
 console.log(error.message);
@@ -103,11 +104,16 @@ adminRoute.post('/editUser',async(req,res)=>{
 try {
     const {name,email} = req.body;
     const userUpdate = await User.updateOne ({email:email},{$set:{name:name}})
+    console.log(userUpdate);
     if(!userUpdate){
         return res.send({
-            message:"success"
+            message:"something went wrong"
         })
+
     }
+    return res.send({
+        message:"success"
+    })
 } catch (error) {
     console.log(error.message);
 }

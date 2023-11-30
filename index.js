@@ -17,10 +17,15 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended:true}))
 
+app.use('/file',express.static('file'));
+app.use(cors({
+  credentials:true,
+  origin:['http://localhost:4200']
+}));
+
 app.use('/',userRoutes)
 app.use('/admin',adminRoutes)
 
-app.use('/file',express.static('file'));
 
 app.listen(3000,()=>{
     console.log('server is listening on localhost:3000');
